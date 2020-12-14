@@ -1,0 +1,17 @@
+.hidden {
+    display: none;
+}
+
+.addcomment {
+    position: fixed;
+    top: 33%;
+    left: 33%;
+    width: 600px;
+    height: 100px;
+    background-color:white;
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow:5px 5px 5px lightgrey;
+    z-index: 10;
+}

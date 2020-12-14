@@ -1,0 +1,15 @@
+.container {
+    position: relative;
+}
+
+.invisible {
+    display: none;
+}
+.floating {
+    display: block;
+    z-index: 100;
+    background-color: white;
+    border-radius: 15px;
+    border: 1px solid black;
+    padding: 15px;
+}
