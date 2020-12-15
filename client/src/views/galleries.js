@@ -13,7 +13,7 @@ const Galleries = props => {
         if(!isLoading) {
             console.log("Retrieving galleries!");
             let temp_galleries = galleries;
-            auth0SecureAPI(getAccessTokenSilently, "photos/owner/123")
+            auth0SecureAPI(getAccessTokenSilently, "photos/owner/" + user.sub)
                 .then(res => { 
                     temp_galleries = res;
                     setGalleries(temp_galleries);
@@ -40,31 +40,26 @@ const Galleries = props => {
             
         }
     }
-    if (isLoading) {
-        return (
-            <div>Loading . .  . </div>
-        )
-    }
+
     
     return (
-        isAuthenticated && (
-            <div>
-                You ARE currently logged in!
-                <h2>{user.name} - {user.user_id}</h2>\
-                <p>{user.email}</p>
-                {//<LogOutButton />
-                }
-                <button onClick={runRetrieve}>Run retrieve again!</button>
-                <button name="addnewgallery" onClick={() => Navigate("/gallery/new")}>Add new gallery!</button>
-                { galleries && galleries.map((gallery) => {
-                    return (
-                        <div onClick={() => Navigate("/gallery/" + gallery._id)}>
-                            <h2>{gallery.gallery_name}</h2>
-                            <p>Photo Count: {gallery.photo.length}</p>
-                        </div> )
-                })}
-            </div>
-        )
+        <div>
+            You ARE currently logged in!
+            <h2>{user.name} - {user.user_id}</h2>\
+            <p>{user.email}</p>
+            {//<LogOutButton />
+            }
+            <button onClick={runRetrieve}>Run retrieve again!</button>
+            <button name="addnewgallery" onClick={() => Navigate("/gallery/new")}>Add new gallery!</button>
+            { galleries && galleries.map((gallery) => {
+                return (
+                    <div onClick={() => Navigate("/gallery/" + gallery._id)}>
+                        <h2>{gallery.gallery_name}</h2>
+                        <p>Photo Count: {gallery.photo.length}</p>
+                    </div> )
+            })}
+        </div>
+        
     )
     
 }

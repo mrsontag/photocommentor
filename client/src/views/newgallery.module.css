@@ -5,10 +5,6 @@
 .invisible {
     display: none;
 }
-
-.visible {
-    display: default;
-}
 .floating {
     display: block;
     z-index: 100;
@@ -16,8 +12,4 @@
     border-radius: 15px;
     border: 1px solid black;
     padding: 15px;
-}
-
-.topalign {
-    vertical-align: top;
 }

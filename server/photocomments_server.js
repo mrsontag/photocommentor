@@ -17,4 +17,4 @@ app.use(express.json(), express.urlencoded({ extended: true }));
 const AllMyUserRoutes = require("./routes/server.routes");
 AllMyUserRoutes(app);
 
-app.listen(8000, () => console.log("The server is all fired up on port 8000"));
+app.listen(8002, () => console.log("The server is all fired up on port 8000"));

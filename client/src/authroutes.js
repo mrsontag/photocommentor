@@ -2,9 +2,11 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import Login from './views/login';
 import { Router } from "@reach/router";
+import NewGallery from "./views/newgallery";
+import NewPhotoPage from "./views/newphotopage";
 import Galleries from './views/galleries';
 import Gallery from "./views/gallery";
-import PhotoPage from "./Components/Details";
+import PhotoPage from "./views/photopage";
 
 const AuthRoutes = props => {
     const { isAuthenticated, isLoading } = useAuth0();
@@ -29,10 +31,10 @@ const AuthRoutes = props => {
         <>
             <Router>
                 <Galleries path="/loggedin"/>
-                <Gallery path="/gallery/new" isnew={true} />
+                <NewGallery path="/gallery/new" />
                 <Gallery path="/gallery/:id" />
-                <PhotoPage path="/Detail/new/:togallery" isnew={true}/>
-                <PhotoPage path="/Detail/:id" />
+                <NewPhotoPage path="/photos/new/:togallery" />
+                <PhotoPage path="/photos/:id" />
             </Router>
         </>
     )

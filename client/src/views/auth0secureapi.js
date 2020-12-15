@@ -20,7 +20,7 @@ const auth0SecureAPI = async (getAccessTokenSilently, endpoint, body) => {
                 }
             };
         }
-        response = await fetch("http://localhost:8000/api/" + endpoint, payload);
+        response = await fetch("http://localhost:8002/api/" + endpoint, payload);
         return response.json();
     } catch (e) {
         console.log(e.message);

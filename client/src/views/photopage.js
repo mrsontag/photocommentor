@@ -5,14 +5,14 @@ import Box from '@material-ui/core/Box';
 import { useAuth0 } from '@auth0/auth0-react';
 import auth0SecureAPI from './auth0secureapi';
 import { useNavigate } from '@reach/router';
-import AddComment from './basicaddcomment';
-import Target from "./basictarget";
+import AddComment from '../Components/addcomment';
+import Target from "../Components/target";
 
 
 const PhotoPage = props => {
-    const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-    const { id, togallery }  = props;
-    const [isnew, setIsNew ] = useState(props.isnew);
+    const { user, isLoading, getAccessTokenSilently } = useAuth0();
+    const { id }  = props;
+    const [ value, setValue ] = useState()
     const [ photo, setPhoto ] = useState({});
     const [ editMode, setEditMode ] = useState(false);
     const [ commentloc, setCommentLoc ] = useState(null);
@@ -27,51 +27,31 @@ const PhotoPage = props => {
     let imagebox;
 
     useEffect(() => {
-        console.log("Is new:", isnew);
         if(!isLoading) {
-            if(isnew) {
-                setPhoto( {gallery_id: togallery} );
-                setEditMode(true);
-            } else {
-                auth0SecureAPI(getAccessTokenSilently, "photos/" + id)
-                    .then(res => {
-                        setPhoto({...res.photo[0], gallery_name: res.gallery_name, gallery_id: res._id});
-                        for(const rating of res.photo[0].ratings) {
-                            console.log("looking at", rating.user_id);
-                            if(rating.user_id === user.sub) {
-                                setValue(rating.rating);
-                                break;
-                            }
-                        }
-                    })
-                    .catch(err => console.log(err));
-            }
+            auth0SecureAPI(getAccessTokenSilently, "photos/" + id)
+            .then(res => {
+                setPhoto({...res.photo[0], gallery_name: res.gallery_name, gallery_id: res._id});
+                for(const rating of res.photo[0].ratings) {
+                    console.log("looking at", rating.user_id);
+                    if(rating.user_id === user.sub) {
+                        setValue(rating.rating);
+                        break;
+                    }
+                }
+            })
+            .catch(err => console.log(err));
         }
         console.log("Ran use effect");
     },[isLoading]);
 
     const clickEdit = () => {
         if(editMode) {
-            let postpath = isnew ? "add/" + togallery : "update/" + id
-            auth0SecureAPI(getAccessTokenSilently, "photos/" + postpath, photo)
+            auth0SecureAPI(getAccessTokenSilently, "photos/update/" + id, photo)
                 .then(res => alert("Changes saved!"))
                 .catch(err => console.log(err));
         }
         setEditMode(!editMode);
     }
-
-    // const imageClick = (event) => {
-    //     imagebox = (image.current.getBoundingClientRect());
-    //     let xpct = Math.round((event.clientX - imagebox.left + window.pageXOffset) / imagebox.width * 100);
-    //     let ypct = Math.round((event.clientY - imagebox.top + window.pageYOffset) / imagebox.height * 100);
-    //     setCommentLoc( {
-    //         xpct: xpct,
-    //         ypct: ypct,
-    //         xloc: event.clientX + window.pageXOffset,
-    //         yloc: event.clientY + window.pageYOffset
-    //     })
-    //     setActiveComment(null);
-    // }
 
     const mouseUp = (event) => {
         if(!selection.hidden) {
@@ -137,21 +117,6 @@ const PhotoPage = props => {
         setPhoto(temp_photo);
         auth0SecureAPI(getAccessTokenSilently, "photos/update/" + id, temp_photo)
         .catch(err => console.log(err));
-    }
-
-    if(typeof(photo) === "undefined") {
-        //new photo
-        console.log("New photo!");
-        setEditMode(true);
-        return(
-            <div className={styles.container}>
-                <img src={photo.path} ref={image} alt="User submitted with comments" onClick={imageClick}/>
-                <button onClick={clickEdit}>{editMode ? "Save" : "Edit"}</button>
-                <form className={!editMode ? " " + styles.invisible : styles.floating }>
-                    <input type="text" name="path" value={photo.path} onChange={(e) => setPhoto( {...photo, path: e.target.value} ) } />
-                </form>
-            </div>
-        )
     }
 
     return (
