@@ -9,7 +9,7 @@ if (!process.env.AUTH0_DOMAIN_PHOTO || !process.env.AUTH0_AUDIENCE_PHOTO) {
     throw 'Make sure you have AUTH0_DOMAIN, and AUTH0_AUDIENCE in your .env file';
 }
 
-const checkJwt = jwt({
+const checkJwtSecure = jwt({
     // Dynamically provide a signing key based on the [Key ID](https://tools.ietf.org/html/rfc7515#section-4.1.4) header parameter ("kid") and the signing keys provided by the JWKS endpoint.
     secret: jwksRsa.expressJwtSecret({
         cache: true,
@@ -24,6 +24,10 @@ const checkJwt = jwt({
     algorithms: ['RS256']
 });
 const checkScopes = jwtAuthz(['read:messages']);
+
+const secure = process.env.AUTH0_DOMAIN_SECURE
+
+const checkJwt = secure ? checkJwtSecure : (req, res, next) => { next() }
 
 
 module.exports = app => {

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost/photocomments_v7", {
+mongoose.connect("mongodb://localhost/mrs_photocomments", {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 })

@@ -3,8 +3,11 @@
     height: 400px;
     display: inline-block;
     border: 1px solid darkgrey;
+    border-radius: 15px;
     margin: 10px;
     text-align: center;
+    vertical-align: top;
+    overflow: hidden;
 }
 
 .small img {

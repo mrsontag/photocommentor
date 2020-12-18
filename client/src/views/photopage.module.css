@@ -13,8 +13,18 @@
 }
 .floating {
     display: block;
+    z-index: 100;
     background-color: white;
     border-radius: 15px;
     border: 1px solid black;
     padding: 15px;
+}
+
+.active {
+    color: red;
+    font-weight: bold;
+}
+
+.regular {
+    color: black;
 }

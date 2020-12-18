@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import Login from './views/login';
 import { Router } from "@reach/router";
@@ -7,10 +7,12 @@ import NewPhotoPage from "./views/newphotopage";
 import Galleries from './views/galleries';
 import Gallery from "./views/gallery";
 import PhotoPage from "./views/photopage";
+import NavBar from "./views/navbar";
 
 const AuthRoutes = props => {
-    const { isAuthenticated, isLoading } = useAuth0();
-    
+    const { user, isAuthenticated, isLoading } = useAuth0();
+    const [ navpath, setNavPath ] = useState([])
+
     if(isLoading) {
         return (
             <div>Loading . . . </div>
@@ -29,12 +31,13 @@ const AuthRoutes = props => {
 
     return (
         <>
+            <NavBar user={user} navpath={navpath}/>
             <Router>
-                <Galleries path="/loggedin"/>
+                <Galleries path="/loggedin" setNavPath={ setNavPath }/>
                 <NewGallery path="/gallery/new" />
-                <Gallery path="/gallery/:id" />
+                <Gallery path="/gallery/:id" setNavPath={ setNavPath }/>
                 <NewPhotoPage path="/photos/new/:togallery" />
-                <PhotoPage path="/photos/:id" />
+                <PhotoPage path="/photos/:id" setNavPath={ setNavPath }/>
             </Router>
         </>
     )

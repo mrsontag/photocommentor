@@ -4,7 +4,7 @@ const Target = props => {
     const { xloc, yloc, diam, active, hidden = false, onClick, text="" } = props;
     let showdiam = Math.max(diam, 10);
     if(typeof(showdiam)!== "number") { showdiam = 10};
-
+    
     let onClickPassed;
     onClick ? onClickPassed = onClick : onClickPassed = () => {};
 

@@ -14,12 +14,25 @@ const Gallery = props => {
     const photoslist = gallery.photo ?? [];
     const [editMode, setEditMode ] = useState(false);
     const Navigate = useNavigate();
+    const { setNavPath } = props;
 
     useEffect(() => {
         if(!isLoading ) {
             auth0SecureAPI(getAccessTokenSilently, "photos/gallery/" + id)
-            .then(res => setGallery(res[0]))
+            .then(res => {
+                setGallery(res[0]);
+                setNavPath( [
+                    { name: user.name + " Galleries",
+                        link: "/loggedin/"
+                    },
+                    { name: res[0].gallery_name,
+                    link: "/gallery/" + id
+                    }
+                ])
+            })
             .catch(err => console.log(err));   
+
+            
         }
     },[isLoading]);
 
@@ -36,7 +49,6 @@ const Gallery = props => {
     return (
         <div className={styles.container}>
             <div>
-                <h1>Welcome {user.name}</h1>
                 <button onClick={()=> Navigate("/loggedin/")}>Back to gallery list!</button>
                 <h2>{gallery.gallery_name}</h2>
                 <p>Authorized Users: {gallery.authorized_user_ids}</p>
