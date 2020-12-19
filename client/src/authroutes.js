@@ -8,6 +8,7 @@ import Galleries from './views/galleries';
 import Gallery from "./views/gallery";
 import PhotoPage from "./views/photopage";
 import NavBar from "./views/navbar";
+import Home from "./views/home";
 
 const AuthRoutes = props => {
     const { user, isAuthenticated, isLoading } = useAuth0();
@@ -15,7 +16,7 @@ const AuthRoutes = props => {
 
     if(isLoading) {
         return (
-            <div>Loading . . . </div>
+            <div>Logging you in . . . </div>
         )
     }
 
@@ -33,7 +34,9 @@ const AuthRoutes = props => {
         <>
             <NavBar user={user} navpath={navpath}/>
             <Router>
-                <Galleries path="/loggedin" setNavPath={ setNavPath }/>
+                <Home path="/loggedin" setNavPath={ setNavPath } newlogin={true} />
+                <Home path="/home/:id" setNavPath={ setNavPath } />
+                <Galleries path="/galleries" setNavPath={ setNavPath }/>
                 <NewGallery path="/gallery/new" />
                 <Gallery path="/gallery/:id" setNavPath={ setNavPath }/>
                 <NewPhotoPage path="/photos/new/:togallery" />

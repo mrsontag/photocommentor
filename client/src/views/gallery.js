@@ -22,8 +22,8 @@ const Gallery = props => {
             .then(res => {
                 setGallery(res[0]);
                 setNavPath( [
-                    { name: user.name + " Galleries",
-                        link: "/loggedin/"
+                    { name: "Home",
+                        link: "/home/" + user.sub
                     },
                     { name: res[0].gallery_name,
                     link: "/gallery/" + id

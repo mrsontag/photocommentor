@@ -9,32 +9,38 @@ if (!process.env.AUTH0_DOMAIN_PHOTO || !process.env.AUTH0_AUDIENCE_PHOTO) {
     throw 'Make sure you have AUTH0_DOMAIN, and AUTH0_AUDIENCE in your .env file';
 }
 
-const checkJwtSecure = jwt({
-    // Dynamically provide a signing key based on the [Key ID](https://tools.ietf.org/html/rfc7515#section-4.1.4) header parameter ("kid") and the signing keys provided by the JWKS endpoint.
-    secret: jwksRsa.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `https://${process.env.AUTH0_DOMAIN_PHOTO}/.well-known/jwks.json`
-    }),
-
-    // Validate the audience and the issuer.
-    audience: process.env.AUTH0_AUDIENCE_PHOTO,
-    issuer: `https://${process.env.AUTH0_DOMAIN_PHOTO}/`,
-    algorithms: ['RS256']
-});
-const checkScopes = jwtAuthz(['read:messages']);
-
 const secure = process.env.AUTH0_DOMAIN_SECURE
+let checkJwt;
 
-const checkJwt = secure ? checkJwtSecure : (req, res, next) => { next() }
+if(secure === "0") {
+    checkJwt = (req, res, next) => { next() }
 
+} else {
+    console.log("went the jwt route")
+    checkJwt = jwt({
+        // Dynamically provide a signing key based on the [Key ID](https://tools.ietf.org/html/rfc7515#section-4.1.4) header parameter ("kid") and the signing keys provided by the JWKS endpoint.
+        secret: jwksRsa.expressJwtSecret({
+            cache: true,
+            rateLimit: true,
+            jwksRequestsPerMinute: 5,
+            jwksUri: `https://${process.env.AUTH0_DOMAIN_PHOTO}/.well-known/jwks.json`
+        }),
+
+        // Validate the audience and the issuer.
+        audience: process.env.AUTH0_AUDIENCE_PHOTO,
+        issuer: `https://${process.env.AUTH0_DOMAIN_PHOTO}/`,
+        algorithms: ['RS256']
+    });
+    const checkScopes = jwtAuthz(['read:messages']);
+
+}
 
 module.exports = app => {
     app.get("/api/users/", checkJwt, UserController.findAllUsers);
     app.get("/api/users/:id", checkJwt, UserController.findOneSingleUser);
     app.put("/api/users/update/:id", checkJwt, UserController.updateExistingUser);
     app.post("/api/users/new", checkJwt, UserController.createNewUser);
+    app.post("/api/users/addorupdate/:auth0_id", checkJwt, UserController.addOrUpdateUser);
     app.delete("/api/users/delete/:id", checkJwt, UserController.deleteAnExistingUser);
 
     app.get("/api/photos/", checkJwt, PhotoController.findAllPhotos);

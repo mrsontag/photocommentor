@@ -29,6 +29,7 @@ const Galleries = props => {
                     link: "/loggedin/"
                 }
             ])
+            console.log("User", user);
         }
     },[isLoading]);
 

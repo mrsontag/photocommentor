@@ -1,0 +1,32 @@
+
+.invisible {
+    display: none;
+}
+
+.visible {
+    display: default;
+}
+
+.gallery {
+    width: 300px;
+    height: 400px;
+    display: inline-block;
+    border: 1px solid darkgrey;
+    z-index: 100;
+    background-color: white;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 15px;
+    vertical-align: top;
+}
+
+.thumbnail {
+    display: inline-block;
+    max-width: 75px;
+    max-height: 100px;
+    margin: 3px;
+}
+
+.topalign {
+    vertical-align: top;
+}
