@@ -22,3 +22,8 @@
 .topalign {
     vertical-align: top;
 }
+
+.halfsize {
+    width: 400px;
+    display: inline-block;
+}

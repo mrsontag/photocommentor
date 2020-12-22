@@ -8,21 +8,13 @@ const Photo = props => {
     const { path, _id, ratings, comments } = props.photo;
     const Navigate = useNavigate();
     
+    const avgrating = ratings.length ? ratings.reduce((total, current) => total + current.rating, 0) / (ratings.length) : 0;
+
     return (
         <div className={styles.small} onClick={() => Navigate("/photos/" + _id)}>
             <img src={path} alt="Comment-tagged"/>
-            <h5>Ratings</h5>
-            { ratings && ratings.map((rating) => {
-                return (
-                    <p>{rating.user_name} - {rating.rating}</p>
-                )
-            })}
-            <h5>Comments</h5>
-            { comments && comments.map((comment) => {
-                return (
-                    <p>{`${comment.user_name} (${comment.x}, ${comment.y}) - ${comment.comment}`}</p>
-                )
-            })}
+            <h5>{ratings.length ? `${ratings.length} Rating(s), average ${avgrating}` : "No ratings"}</h5>
+            <h5>{comments.length ? comments.length + " Comments" : "No comments"}</h5>
         </div>
     )
 }

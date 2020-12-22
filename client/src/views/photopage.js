@@ -7,7 +7,7 @@ import auth0SecureAPI from './auth0secureapi';
 import { useNavigate } from '@reach/router';
 import AddComment from '../Components/addcomment';
 import Target from "../Components/target";
-
+import Button from "@material-ui/core/Button";
 
 const PhotoPage = props => {
     const { user, isLoading, getAccessTokenSilently } = useAuth0();
@@ -52,7 +52,9 @@ const PhotoPage = props => {
         if (editMode) {
             auth0SecureAPI(getAccessTokenSilently, "photos/update/" + id, photo)
                 .then(res => {
-                    setPhoto({...res.photo[res.photo.length - 1]});
+                    //let whichphoto = res.photo.find((photo) => photo._id = id);
+                    //console.log("Photos:", res, "Which photo: ", whichphoto);
+                    setPhoto(res.photo.find((photo) => photo._id === id));
                     setGallery({gallery_name: res.gallery_name, gallery_id: res._id})
                 })
                 .catch(err => console.log(err));
@@ -63,9 +65,11 @@ const PhotoPage = props => {
     const mouseUp = (event) => {
         if (!selection.hidden) {
             imagebox = (image.current.getBoundingClientRect());
-            let xpct = Math.round((selection.xloc - imagebox.left) / imagebox.width * 100);
-            let ypct = Math.round((selection.yloc - imagebox.top) / imagebox.height * 100);
+            let xpct = Math.round(selection.xloc / imagebox.width * 100);
+            let ypct = Math.round(selection.yloc / imagebox.height * 100);
             let diampct = diam / imagebox.width * 100;
+            console.log("Imagebox: ", imagebox, "Cursor", selection, "Pct", xpct, ypct, diampct)
+            
             setCommentLoc({
                 ...selection,
                 xpct: xpct,
@@ -146,14 +150,13 @@ const PhotoPage = props => {
 
     return (
         <div className={styles.container}>
-            <div ref={imgcontainer} id="img_container" name="imagecontainer" onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={mouseMove}>
+            <div ref={imgcontainer} id="img_container" name="imagecontainer" onMouseUp={mouseUp} onMouseMove={mouseMove}>
                 <Target key="selector" xloc={selection.xloc} yloc={selection.yloc} diam={diam} active={true} hidden={selection.hidden} />
-                <img onLoad={() => setActiveComment(27)} src={photo.path} ref={image} alt="User submitted with comments" />
+                <img onLoad={() => setActiveComment(27)} src={photo.path} ref={image} onMouseDown={mouseDown} alt="User submitted with comments" />
                 {photo.comments && photo.comments.map((comment, index) => {
                     imagebox = (image.current.getBoundingClientRect());
-                    const xloc = (comment.x / 100 * imagebox.width) + imagebox.left;
-                    const yloc = (comment.y / 100 * imagebox.height) + imagebox.top;
-                    console.log(comment.x, comment.y, comment.diam)
+                    const xloc = (comment.x / 100 * imagebox.width);
+                    const yloc = (comment.y / 100 * imagebox.height);
                     const showdiam = (comment.diam / 100 * imagebox.width);
                     const clickTarget = () => {
                         if (activecomment === comment._id) {
@@ -186,9 +189,10 @@ const PhotoPage = props => {
             </div>
             {//END RE-WRITE 
             }
-            <button onClick={clickEdit}>{editMode ? "Save" : "Edit"}</button>
+            <Button variant="contained" color="primary" onClick={clickEdit}>{editMode ? "Save" : "Edit"}</Button>
             <form className={!editMode ? " " + styles.invisible : styles.floating}>
-                <input type="text" name="path" value={photo.path} onChange={(e) => setPhoto({ ...photo, path: e.target.value })} />
+                <input style={{width: "95%" }} type="text" name="path" value={photo.path} onChange={(e) => setPhoto({ ...photo, path: e.target.value })} />
+                <Button variant="contained" color="primary" onClick={() => setEditMode(false)}>Cancel</Button>
             </form>
             <AddComment comment={activecomment} setActiveComment={setActiveComment} commentloc={commentloc} setCommentLoc={setCommentLoc} photo={photo} setPhoto={setPhoto} id={id} />
             <h5>Ratings</h5>
@@ -212,7 +216,7 @@ const PhotoPage = props => {
                     </>
                 )
             })}
-            <button onClick={() => Navigate("/gallery/" + photo.gallery_id)}>Go back to gallery!</button>
+            <Button variant="contained" color="primary" onClick={() => Navigate("/gallery/" + gallery.gallery_id)}>Go back to gallery!</Button>
         </div>
     )
 }

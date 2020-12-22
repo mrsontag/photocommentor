@@ -13,9 +13,7 @@ const NewPhotoPage = props => {
     const Navigate = useNavigate();
 
     useEffect(() => {
-        if(!isLoading) {
-            setPhoto( {gallery_id: togallery} );
-        }
+        setPhoto( {gallery_id: togallery} );
         console.log("Ran use effect");
     },[isLoading]);
 

@@ -23,7 +23,6 @@ const Gallery = props => {
             authorized_user_ids: gallery.authorized_user_ids,
             owner_id: user.sub
         }
-        console.log(gallery_update);
         auth0SecureAPI(getAccessTokenSilently, "gallery/new", gallery_update)
         .then(res => {
             Navigate("/gallery/" + res._id);

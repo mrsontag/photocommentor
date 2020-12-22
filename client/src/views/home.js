@@ -3,17 +3,34 @@ import { useAuth0 } from '@auth0/auth0-react';
 import auth0SecureAPI from './auth0secureapi';
 import { useNavigate } from '@reach/router';
 import styles from "./home.module.css";
+import Button from "@material-ui/core/Button";
+
+const GalleryTile = props => {
+    const Navigate = useNavigate();
+    const { gallery } = props;
+    return (
+        <div key={gallery._id} className={styles.gallery} onClick={() => Navigate("/gallery/" + gallery._id)}>
+            <h2>{gallery.gallery_name}</h2>
+            <p>Photo Count: {gallery.photo.length}</p>
+            { gallery.photo.length && gallery.photo.map((photo, index) => {
+                //if() { return };
+                return index>4 ? null : (
+                    <img className={styles.thumbnail} alt="User submitted" src={photo.path} />
+                )
+                })
+            }
+        </div>
+    )
+}
 
 const Home = props => {
-    const { user, isLoading, getAccessTokenSilently } = useAuth0();
+    const { user, getAccessTokenSilently } = useAuth0();
     const { setNavPath, newlogin } = props;
     const [galleries, setGalleries] = useState([]);
     const Navigate = useNavigate();
-    console.log(user);
-
+    
     useEffect(() => {
-        let temp_galleries = galleries;
-        auth0SecureAPI(getAccessTokenSilently, "photos/owner/" + user.sub)
+        auth0SecureAPI(getAccessTokenSilently, "photos/")
             .then(res => setGalleries(res) )
             .catch(err => console.log(err));
         setNavPath( [
@@ -36,30 +53,22 @@ const Home = props => {
             <div>Something went wrong.</div>
         )
     }
-
-    
-
     
     return (
-        <div>
+        <>
             <div>
-                <button name="addnewgallery" onClick={() => Navigate("/gallery/new")}>Add new gallery!</button>
+                <h3 style={{display: "inline-block", marginRight: "40px"}} >My galleries:</h3>
+                <Button style={{display: "inline-block"}} variant="contained" color="primary" name="addnewgallery" 
+                    onClick={() => Navigate("/gallery/new")}>Add new gallery!</Button>
             </div>
-            { galleries && galleries.map((gallery) => {
-                return (
-                    <div className={styles.gallery} onClick={() => Navigate("/gallery/" + gallery._id)}>
-                        <h2>{gallery.gallery_name}</h2>
-                        <p>Photo Count: {gallery.photo.length}</p>
-                        { gallery.photo.length && gallery.photo.map((photo, index) => {
-                            if(index>4) { return };
-                            return (
-                                <img className={styles.thumbnail} alt="User submitted" src={photo.path} />
-                            )
-                            })
-                        }
-                    </div> )
+            { galleries && galleries.filter(gallery => gallery.owner_id === user.sub).map((gallery) => {
+                return <GalleryTile gallery={gallery} />
             })}
-        </div>
+            <h3>Other galleries:</h3>
+            { galleries && galleries.filter(gallery => gallery.owner_id !== user.sub).map((gallery) => {
+                return <GalleryTile gallery={gallery} />
+            })}
+        </>
         
     )
     
