@@ -1,11 +1,17 @@
+import React, { useState } from 'react';
 import './App.css';
 import { Router } from '@reach/router'
 import Login from './views/login'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AuthRoutes from './authroutes';
-import GalleriesNoLogin from "./views/galleries_nologin";
+import HomeAnon from "./views/home_anon";
+import Gallery from "./views/gallery";
+import PhotoPage from "./views/photopage";
+import MadeBy from "./views/madeby";
 
 function App() {
+    const [ navpath, setNavPath ] = useState([])
+
     return (
         <div className="App">
             {/*<div id="background">
@@ -14,9 +20,12 @@ function App() {
                 </svg>
             </div>*/}   
             <div className="container">
+                <MadeBy />
                 <Router>
                     <Login path="/" />
-                    <GalleriesNoLogin path="/nologin/" />
+                    <HomeAnon path="/anon/" />
+                    <Gallery path="/gallery_anon/:id" anon={true} setNavPath={ setNavPath }/>
+                    <PhotoPage path="/photos_anon/:id" anon={true} setNavPath={ setNavPath }/>
                     <AuthRoutes path="/*" />
                 </Router>
             </div>

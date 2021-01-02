@@ -43,6 +43,12 @@ module.exports = app => {
     app.post("/api/users/addorupdate/:auth0_id", checkJwt, UserController.addOrUpdateUser);
     app.delete("/api/users/delete/:id", checkJwt, UserController.deleteAnExistingUser);
 
+    //anonymous gallery routes
+    app.get("/api/photos_anon/", PhotoController.findAllPhotosAnon);
+    app.get("/api/photos/gallery_anon/:id", PhotoController.findAllPhotosAnonByGalleryID);
+    app.get("/api/photos_anon/:id", PhotoController.findOneSinglePhotoAnon);
+    
+    //secure gallery routes
     app.get("/api/photos/", checkJwt, PhotoController.findAllPhotos);
     app.get("/api/photos/:id", checkJwt, PhotoController.findOneSinglePhoto);
     app.post("/api/photos/update/:id", checkJwt, PhotoController.updateExistingPhoto);

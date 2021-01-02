@@ -4,8 +4,6 @@
     
 }
 
-
-
 div {
     vertical-align: middle;
 }
@@ -19,3 +17,6 @@ div {
     
 }
 
+.hidden {
+    display: none;
+}

@@ -2,26 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import auth0SecureAPI from './auth0secureapi';
 import { useNavigate } from '@reach/router';
-import styles from "./home.module.css";
 import Button from "@material-ui/core/Button";
+import GalleryTile from './gallerytile';
 
-const GalleryTile = props => {
-    const Navigate = useNavigate();
-    const { gallery } = props;
-    return (
-        <div key={gallery._id} className={styles.gallery} onClick={() => Navigate("/gallery/" + gallery._id)}>
-            <h2>{gallery.gallery_name}</h2>
-            <p>Photo Count: {gallery.photo.length}</p>
-            { gallery.photo.length && gallery.photo.map((photo, index) => {
-                //if() { return };
-                return index>4 ? null : (
-                    <img className={styles.thumbnail} alt="User submitted" src={photo.path} />
-                )
-                })
-            }
-        </div>
-    )
-}
 
 const Home = props => {
     const { user, getAccessTokenSilently } = useAuth0();

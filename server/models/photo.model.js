@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const PhotoSchema = new mongoose.Schema({
 	gallery_name: String,
 	owner_id: String,
-	authorized_user_ids: [ String ],
+    authorized_user_ids: [ String ],
+    show_anonymous: Boolean,
 	photo: [ {
 		path: String,
 		ratings: [ {

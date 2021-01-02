@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 
 const PhotoPage = props => {
     const { user, isLoading, getAccessTokenSilently } = useAuth0();
-    const { id } = props;
+    const { id, anon } = props;
     const [value, setValue] = useState(0)
     const [photo, setPhoto] = useState({});
     const [gallery, setGallery] = useState({});
@@ -28,12 +28,11 @@ const PhotoPage = props => {
     let imagebox;
 
     useEffect(() => {
-        if (!isLoading) {
+        if (!anon) {
             auth0SecureAPI(getAccessTokenSilently, "photos/" + id)
                 .then(res => {
-                    console.log(res.photo[0])
                     setPhoto({ ...res.photo[0], gallery_name: res.gallery_name, gallery_id: res._id });
-                    setGallery( {gallery_name: res.gallery_name, gallery_id: res._id})
+                    setGallery( {gallery_name: res.gallery_name, gallery_id: res._id, owner_id: res.owner_id})
                     for (const rating of res.photo[0].ratings) {
                         console.log("looking at", rating.user_id);
                         if (rating.user_id === user.sub) {
@@ -44,6 +43,14 @@ const PhotoPage = props => {
                 })
                 .catch(err => console.log(err));
                 
+        } else {
+            fetch("http://localhost:8002/api/photos_anon/" + id)
+            .then(response =>  response.json())
+            .then(res =>  {
+                setPhoto({ ...res.photo[0], gallery_name: res.gallery_name, gallery_id: res._id });
+                setGallery( {gallery_name: res.gallery_name, gallery_id: res._id, owner_id: res.owner_id})
+                } )
+            .catch(err => console.log(err));
         }
         console.log("Ran use effect");
     }, [isLoading]);
@@ -55,7 +62,7 @@ const PhotoPage = props => {
                     //let whichphoto = res.photo.find((photo) => photo._id = id);
                     //console.log("Photos:", res, "Which photo: ", whichphoto);
                     setPhoto(res.photo.find((photo) => photo._id === id));
-                    setGallery({gallery_name: res.gallery_name, gallery_id: res._id})
+                    setGallery({gallery_name: res.gallery_name, gallery_id: res._id, owner_id: res.owner_id})
                 })
                 .catch(err => console.log(err));
         }
@@ -173,12 +180,10 @@ const PhotoPage = props => {
                     )
                 })}
             </div>
-            {//NEED TO RE-WRITE 
-            }
-            <div className="star">
+            <div className={ anon ?  "hidden" : "star" } >
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     <Rating
-                        name="simple-controlled"
+                        name="rating"
                         value={value}
                         onChange={(event, newValue) => {
                             setValue(newValue);
@@ -187,9 +192,7 @@ const PhotoPage = props => {
                     />
                 </Box>
             </div>
-            {//END RE-WRITE 
-            }
-            <Button variant="contained" color="primary" onClick={clickEdit}>{editMode ? "Save" : "Edit"}</Button>
+            <Button style={ anon || gallery.owner_id !== user.sub ? {display: "none"} : {display: "inline-block"}} variant="contained" color="primary" onClick={clickEdit}>{editMode ? "Save" : "Edit"}</Button>
             <form className={!editMode ? " " + styles.invisible : styles.floating}>
                 <input style={{width: "95%" }} type="text" name="path" value={photo.path} onChange={(e) => setPhoto({ ...photo, path: e.target.value })} />
                 <Button variant="contained" color="primary" onClick={() => setEditMode(false)}>Cancel</Button>
@@ -216,7 +219,7 @@ const PhotoPage = props => {
                     </>
                 )
             })}
-            <Button variant="contained" color="primary" onClick={() => Navigate("/gallery/" + gallery.gallery_id)}>Go back to gallery!</Button>
+            <Button variant="contained" color="primary" onClick={() => Navigate(`/gallery${anon ? "_anon" : ""}/` + gallery.gallery_id)}>Go back to gallery!</Button>
         </div>
     )
 }
