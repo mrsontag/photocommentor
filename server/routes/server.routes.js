@@ -47,6 +47,7 @@ module.exports = app => {
     app.get("/api/photos_anon/", PhotoController.findAllPhotosAnon);
     app.get("/api/photos/gallery_anon/:id", PhotoController.findAllPhotosAnonByGalleryID);
     app.get("/api/photos_anon/:id", PhotoController.findOneSinglePhotoAnon);
+    app.post("/api/photos_anon/update/:id", PhotoController.updateExistingPhotoAnon);
     
     //secure gallery routes
     app.get("/api/photos/", checkJwt, PhotoController.findAllPhotos);

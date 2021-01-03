@@ -5,11 +5,24 @@ import auth0SecureAPI from '../views/auth0secureapi';
 import Target from './target';
 
 const AddComment = props => {
-    const { photo, setPhoto, commentloc, setCommentLoc, setActiveComment } = props;
+    const { photo, setPhoto, commentloc, setCommentLoc, setActiveComment, anon } = props;
     const { user, getAccessTokenSilently } = useAuth0();
     const [ textvalue, setTextValue ] = useState("Enter text here . . . ")
     const { xloc, yloc, xpct, ypct, diam, diampct } = commentloc ?? {};
+    const id = photo._id;
 
+    let comment_user;
+    if (anon) {
+        comment_user = {
+            user_id: "none",
+            user_name: "anonymous"
+        }
+    } else {
+        comment_user = {
+            user_id: user.sub,
+            user_name: user.name
+        }
+    }
     const saveComment = (comment) => {
         let temp_photo;
         if(photo.comments) {
@@ -17,8 +30,8 @@ const AddComment = props => {
             comments: [
                 ...photo.comments, 
                 {
-                    user_id: user.sub,
-                    user_name: user.name,
+                    user_id: comment_user.user_id,
+                    user_name: comment_user.user_name,
                     x: xpct,
                     y: ypct,
                     diam: diampct,
@@ -29,8 +42,8 @@ const AddComment = props => {
             temp_photo = {...photo, 
                 comments: [
                     {
-                        user_id: user.sub,
-                        user_name: user.name,
+                        user_id: comment_user.user_id,
+                        user_name: comment_user.user_name,
                         x: xpct,
                         y: ypct,
                         diam: diampct,
@@ -39,10 +52,17 @@ const AddComment = props => {
                 ] };
         }
         setPhoto(temp_photo);
-        console.log("Saving photo", temp_photo, "To path: ", photo._id);
-        auth0SecureAPI(getAccessTokenSilently, "photos/update/" + photo._id, temp_photo)
-            .then(res => setPhoto(res.photo[0]))
+        
+        if (anon) {
+            console.log(temp_photo);
+            fetch("http://localhost:8002/api/photos_anon/update/" + photo._id, { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(temp_photo)})
+            .then(res => setPhoto(res.photo.find((photo) => photo._id === id)))
             .catch(err => console.log(err));
+        } else {
+            auth0SecureAPI(getAccessTokenSilently, "photos/update/" + photo._id, temp_photo)
+            .then(res => setPhoto(res.photo.find((photo) => photo._id === id)))
+            .catch(err => console.log(err));
+        }
         setCommentLoc(null);
         setTextValue("Enter text here . . . ");
         setActiveComment(null);

@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 
 const PhotoPage = props => {
     const { user, isLoading, getAccessTokenSilently } = useAuth0();
-    const { id, anon } = props;
+    const { id, anon = false } = props;
     const [value, setValue] = useState(0)
     const [photo, setPhoto] = useState({});
     const [gallery, setGallery] = useState({});
@@ -25,6 +25,8 @@ const PhotoPage = props => {
     const imgcontainer = useRef(null);
     const Navigate = useNavigate();
     
+    const show_edit = !(anon || gallery.owner_id !== user.sub )
+
     let imagebox;
 
     useEffect(() => {
@@ -192,12 +194,12 @@ const PhotoPage = props => {
                     />
                 </Box>
             </div>
-            <Button style={ anon || gallery.owner_id !== user.sub ? {display: "none"} : {display: "inline-block"}} variant="contained" color="primary" onClick={clickEdit}>{editMode ? "Save" : "Edit"}</Button>
+            <Button style={ show_edit ? {display: "inline-block"} : {display: "none"} } variant="contained" color="primary" onClick={clickEdit}>{editMode ? "Save" : "Edit"}</Button>
             <form className={!editMode ? " " + styles.invisible : styles.floating}>
                 <input style={{width: "95%" }} type="text" name="path" value={photo.path} onChange={(e) => setPhoto({ ...photo, path: e.target.value })} />
                 <Button variant="contained" color="primary" onClick={() => setEditMode(false)}>Cancel</Button>
             </form>
-            <AddComment comment={activecomment} setActiveComment={setActiveComment} commentloc={commentloc} setCommentLoc={setCommentLoc} photo={photo} setPhoto={setPhoto} id={id} />
+            <AddComment comment={activecomment} setActiveComment={setActiveComment} commentloc={commentloc} setCommentLoc={setCommentLoc} photo={photo} setPhoto={setPhoto} id={id} anon={anon} />
             <h5>Ratings</h5>
             { photo.ratings && photo.ratings.map((rating) => {
                 return (
